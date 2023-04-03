@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package heartbeat.v1;
+
+service Heartbeat {
+	rpc ReceiveHeartbeat (HeartbeatRequest) returns (HeartbeatResponse);
+}
+
+message HeartbeatRequest {}
+
+message HeartbeatResponse {}
