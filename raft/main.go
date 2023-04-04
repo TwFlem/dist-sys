@@ -13,7 +13,7 @@ import (
 	connect "github.com/bufbuild/connect-go"
 )
 
-const address = "localhost:8080"
+const address = "0.0.0.0:8080"
 
 func main() {
 	mux := http.NewServeMux()
