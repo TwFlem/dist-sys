@@ -3,9 +3,11 @@ syntax = "proto3";
 package heartbeat.v1;
 
 service Heartbeat {
-	rpc ReceiveHeartbeat (HeartbeatRequest) returns (HeartbeatResponse);
+	rpc Beat (BeatRequest) returns (BeatResponse);
 }
 
-message HeartbeatRequest {}
+message BeatRequest {
+	string sender_name = 1;
+}
 
-message HeartbeatResponse {}
+message BeatResponse {}

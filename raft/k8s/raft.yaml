@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: raft
+  labels:
+    app: raft
+spec:
+  ports:
+  - port: 8080
+    name: raft
+  clusterIP: None
+  selector:
+    app: raft
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: raft
+spec:
+  serviceName: "raft"
+  replicas: 4
+  selector:
+    matchLabels:
+      app: raft
+  template:
+    metadata:
+      labels:
+        app: raft
+    spec:
+      containers:
+      - name: raft
+        image: twflem/raft
+        ports:
+        - containerPort: 8080
+          name: raft
+        volumeMounts:
+        - name: raftdata
+          mountPath: /data
+        env:
+        - name: NUM_REPLICAS
+          value: "4"
+  volumeClaimTemplates:
+  - metadata:
+      name: raftdata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Mi

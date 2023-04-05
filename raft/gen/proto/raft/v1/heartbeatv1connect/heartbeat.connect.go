@@ -25,9 +25,21 @@ const (
 	HeartbeatName = "heartbeat.v1.Heartbeat"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// HeartbeatBeatProcedure is the fully-qualified name of the Heartbeat's Beat RPC.
+	HeartbeatBeatProcedure = "/heartbeat.v1.Heartbeat/Beat"
+)
+
 // HeartbeatClient is a client for the heartbeat.v1.Heartbeat service.
 type HeartbeatClient interface {
-	ReceiveHeartbeat(context.Context, *connect_go.Request[v1.HeartbeatRequest]) (*connect_go.Response[v1.HeartbeatResponse], error)
+	Beat(context.Context, *connect_go.Request[v1.BeatRequest]) (*connect_go.Response[v1.BeatResponse], error)
 }
 
 // NewHeartbeatClient constructs a client for the heartbeat.v1.Heartbeat service. By default, it
@@ -40,9 +52,9 @@ type HeartbeatClient interface {
 func NewHeartbeatClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) HeartbeatClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &heartbeatClient{
-		receiveHeartbeat: connect_go.NewClient[v1.HeartbeatRequest, v1.HeartbeatResponse](
+		beat: connect_go.NewClient[v1.BeatRequest, v1.BeatResponse](
 			httpClient,
-			baseURL+"/heartbeat.v1.Heartbeat/ReceiveHeartbeat",
+			baseURL+HeartbeatBeatProcedure,
 			opts...,
 		),
 	}
@@ -50,17 +62,17 @@ func NewHeartbeatClient(httpClient connect_go.HTTPClient, baseURL string, opts .
 
 // heartbeatClient implements HeartbeatClient.
 type heartbeatClient struct {
-	receiveHeartbeat *connect_go.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	beat *connect_go.Client[v1.BeatRequest, v1.BeatResponse]
 }
 
-// ReceiveHeartbeat calls heartbeat.v1.Heartbeat.ReceiveHeartbeat.
-func (c *heartbeatClient) ReceiveHeartbeat(ctx context.Context, req *connect_go.Request[v1.HeartbeatRequest]) (*connect_go.Response[v1.HeartbeatResponse], error) {
-	return c.receiveHeartbeat.CallUnary(ctx, req)
+// Beat calls heartbeat.v1.Heartbeat.Beat.
+func (c *heartbeatClient) Beat(ctx context.Context, req *connect_go.Request[v1.BeatRequest]) (*connect_go.Response[v1.BeatResponse], error) {
+	return c.beat.CallUnary(ctx, req)
 }
 
 // HeartbeatHandler is an implementation of the heartbeat.v1.Heartbeat service.
 type HeartbeatHandler interface {
-	ReceiveHeartbeat(context.Context, *connect_go.Request[v1.HeartbeatRequest]) (*connect_go.Response[v1.HeartbeatResponse], error)
+	Beat(context.Context, *connect_go.Request[v1.BeatRequest]) (*connect_go.Response[v1.BeatResponse], error)
 }
 
 // NewHeartbeatHandler builds an HTTP handler from the service implementation. It returns the path
@@ -70,9 +82,9 @@ type HeartbeatHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewHeartbeatHandler(svc HeartbeatHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/heartbeat.v1.Heartbeat/ReceiveHeartbeat", connect_go.NewUnaryHandler(
-		"/heartbeat.v1.Heartbeat/ReceiveHeartbeat",
-		svc.ReceiveHeartbeat,
+	mux.Handle(HeartbeatBeatProcedure, connect_go.NewUnaryHandler(
+		HeartbeatBeatProcedure,
+		svc.Beat,
 		opts...,
 	))
 	return "/heartbeat.v1.Heartbeat/", mux
@@ -81,6 +93,6 @@ func NewHeartbeatHandler(svc HeartbeatHandler, opts ...connect_go.HandlerOption)
 // UnimplementedHeartbeatHandler returns CodeUnimplemented from all methods.
 type UnimplementedHeartbeatHandler struct{}
 
-func (UnimplementedHeartbeatHandler) ReceiveHeartbeat(context.Context, *connect_go.Request[v1.HeartbeatRequest]) (*connect_go.Response[v1.HeartbeatResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("heartbeat.v1.Heartbeat.ReceiveHeartbeat is not implemented"))
+func (UnimplementedHeartbeatHandler) Beat(context.Context, *connect_go.Request[v1.BeatRequest]) (*connect_go.Response[v1.BeatResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("heartbeat.v1.Heartbeat.Beat is not implemented"))
 }
