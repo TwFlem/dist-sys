@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package raft.v1;
+
+service Raft {
+	rpc Vote (VoteRequest) returns (VoteResponse);
+	rpc AppendEntry (AppendEntryRequest) returns (AppendEntryResponse);
+}
+
+message VoteRequest {
+	string sender_name = 1;
+	int64 term = 2;
+}
+
+message VoteResponse {}
+
+
+message AppendEntryRequest {
+	string sender_name = 1;
+	int64 term = 2;
+	Entry entry = 3;
+}
+
+message AppendEntryResponse {}
+
+message Entry {
+	string hex = 1;
+}
+
+message ObsoleteTermError {
+	int64 latest_term = 1;
+}
